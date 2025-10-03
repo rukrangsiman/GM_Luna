@@ -1,0 +1,622 @@
+
+<!doctype html>
+<html lang="th">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Growth Monitoring — Lunar Farming</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap" rel="stylesheet">
+    <style>
+      @keyframes spin { 100% { transform: rotate(360deg); } }
+      :root{
+        --bg:#0f172a;        /* slate-900 */
+        --panel:#111827;     /* gray-900 */
+        --muted:#94a3b8;     /* slate-400 */
+        --ink:#e5e7eb;       /* gray-200 */
+        --accent:#22c55e;    /* green-500 */
+        --accent-2:#60a5fa;  /* blue-400 */
+        --accent-3:#a21caf;  /* purple-700 */
+        --danger:#ef4444;    /* red-500 */
+        --warn:#f59e0b;      /* amber-500 */
+        --shadow:0 4px 32px 0 rgba(34,197,94,0.10), 0 1.5px 8px 0 rgba(96,165,250,0.10);
+      }
+      *{box-sizing:border-box}
+      html,body{height:100%}
+      body{
+        margin:0;
+        background:
+          linear-gradient(rgba(17, 24, 39, 0.226), rgba(17,24,39,0.82)),
+          url('image/bg.jpg') center center / cover no-repeat fixed;
+        background-attachment: fixed;
+        color:var(--ink);
+        font-family:Inter, system-ui, -apple-system, Segoe UI, Roboto, "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+      }
+  .app{max-width:1100px;margin:32px auto;padding:28px 24px 24px 24px; background:rgba(17,24,39,0.85); border-radius:24px; box-shadow:var(--shadow);}
+      .nav{
+        display:flex;gap:12px;flex-wrap:wrap;margin:16px 0 24px 0; justify-content:flex-start;
+      }
+      .btn{
+        padding:12px 22px;
+        border:none;
+        border-radius:14px;
+        background:#1e293b;
+        color:var(--ink);
+        cursor:pointer;
+        transition:all .15s cubic-bezier(.4,0,.2,1);
+        font-weight:600;
+        font-size:16px;
+        box-shadow:0 1.5px 6px 0 rgba(34,197,94,0.07);
+        display:flex; align-items:center; gap:8px;
+      }
+      .btn:hover{
+        background:#334155;
+        color:var(--accent);
+        transform:translateY(-1.5px) scale(1.02);
+      }
+      .btn.accent{
+        background:var(--accent);
+        color:#fff;
+        border:none;
+        box-shadow:0 2px 12px 0 rgba(34,197,94,0.13);
+      }
+      .btn.accent:hover{
+        background:var(--accent-2);
+        color:#fff;
+      }
+      .grid{display:grid; gap:18px}
+      .grid.kpi{grid-template-columns: repeat(4, minmax(0,1fr)); margin-bottom:18px;}
+      .card{
+        background:linear-gradient(120deg, rgba(69, 179, 118, 0.2) 0%, rgba(96,165,250,.10) 100%);
+        border:1.5px solid rgba(148,163,184,.18);
+        padding:22px 18px;
+        border-radius:20px;
+        box-shadow:0 2px 16px 0 rgba(96,165,250,0.08);
+        position:relative;
+        overflow:hidden;
+      }
+  .title{font-weight:800; font-size:28px; margin:6px 0 18px; letter-spacing:-1px; text-shadow:0 2px 8px rgba(34,197,94,0.10);}
+  .sub{color:var(--muted); font-size:14px; margin-bottom:8px;}
+  .kpi{font-size:34px; font-weight:800; text-shadow:0 2px 8px rgba(96,165,250,0.10);}
+  .tag{display:inline-flex; align-items:center; gap:6px; font-size:13px; padding:5px 12px; border-radius:999px; border:1.5px solid rgba(148,163,184,.35); color:var(--ink); background:rgba(255,255,255,0.04); font-weight:600; box-shadow:0 1px 4px 0 rgba(34,197,94,0.07);}
+  .tag.warn{border-color:var(--warn); color:#fde68a; background:rgba(245,158,11,0.08);}
+  .tag.danger{border-color:var(--danger); color:#fecaca; background:rgba(239,68,68,0.08);}
+  .list{display:flex; flex-direction:column; gap:14px}
+  .row{display:flex; justify-content:space-between; align-items:center; padding:14px 16px; border:1.5px dashed rgba(148,163,184,.13); border-radius:16px; background:rgba(17,24,39,0.7); box-shadow:0 1px 6px 0 rgba(96,165,250,0.07);}
+  .muted{color:var(--muted); font-size:13px;}
+      .field{display:flex; flex-direction:column; gap:8px; margin-bottom:16px}
+      input, select{
+        background:rgba(11,18,32,0.95); color:var(--ink); border:1.5px solid #1f2937; border-radius:14px; padding:12px 14px; font-size:15px; box-shadow:0 1px 4px 0 rgba(96,165,250,0.07);
+      }
+  .login{max-width:420px;margin:90px auto; box-shadow:0 4px 32px 0 rgba(96,165,250,0.13);}
+  .footer{margin-top:18px; color:var(--muted); font-size:12px; text-align:center;}
+  .flex{display:flex;gap:10px; align-items:center}
+  .chart{height:160px; width:100%; background:linear-gradient(120deg, rgba(34,197,94,.13), rgba(96,165,250,.13)); border-radius:16px; position:relative; overflow:hidden; border:1.5px solid rgba(148,163,184,.18); box-shadow:0 1px 8px 0 rgba(34,197,94,0.07);}
+  .dot{position:absolute; width:12px; height:12px; background:linear-gradient(135deg, var(--accent-2), var(--accent)); border-radius:50%; transform:translate(-50%,-50%); opacity:.92; box-shadow:0 2px 8px 0 rgba(96,165,250,0.13); border:2.5px solid #fff2;}
+  .legend{display:flex; gap:10px; font-size:13px; color:var(--muted); margin-top:10px;}
+  .pill{padding:5px 12px; background:rgba(11,18,32,0.92); border:1.5px solid rgba(148,163,184,.18); border-radius:999px; font-size:13px; font-weight:600; color:var(--accent-2);}
+  .cols{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px}
+      @media (max-width: 900px){ .grid.kpi{grid-template-columns:1fr 1fr} .cols{grid-template-columns:1fr} }
+    </style>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script crossorigin src="https://unpkg.com/react@18/umd/react.development.js"></script>
+    <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.development.js"></script>
+    <script>
+      const { useState, useMemo } = React;
+
+      // -------- Mock Data --------
+      const batches = [
+        { id:'A-01', species:'Lettuce', stage:'mature',  start:'2025-08-20', images: 9, img: 'image/lettuce.jpg' },
+        { id:'B-07', species:'Spinach', stage:'seedling', start:'2025-08-27', images: 6, img: 'image/Spinach.jpg' },
+        { id:'C-03', species:'Kale',    stage:'growing',  start:'2025-08-22', images: 7, img: 'image/Kale.jpg' }
+      ];
+
+      const metrics = {
+        'A-01': {
+          height:[12,15,18,22,25,27,29],
+          temp:[22,22,23,24,22,21,22],
+          ph:[6.1,6.2,6.0,5.9,6.1,6.2,6.1]
+        },
+        'B-07': {
+          height:[3,5,7,8,10,12,14],
+          temp:[23,23,22,22,22,21,22],
+          ph:[5.8,5.9,5.9,6.0,5.8,5.8,5.9]
+        },
+        'C-03': {
+          height:[6,7,8,10,11,13,14],
+          temp:[21,21,22,22,21,22,22],
+          ph:[6.2,6.1,6.1,6.2,6.2,6.1,6.1]
+        },
+      };
+
+      const alerts = [
+        { id:1, batch:'A-01', ts:'2025-09-01 10:12', type:'High', metric:'EC', msg:'EC สูงกว่าค่ากำหนด 2.1 mS/cm', action:'ลดความเข้มข้นสารละลายเล็กน้อย' },
+        { id:2, batch:'B-07', ts:'2025-09-02 08:15', type:'Low', metric:'Temp', msg:'อุณหภูมิต่ำ 17°C', action:'เพิ่มความร้อน +1°C' },
+        { id:3, batch:'C-03', ts:'2025-09-03 14:20', type:'Trend', metric:'pH', msg:'pH ลดลงต่อเนื่อง 6.2→6.0', action:'ตรวจสอบสารละลายใหม่' },
+      ];
+
+      // -------- Small helpers --------
+      function Tag({children, tone}){
+        const cls = 'tag ' + (tone || '');
+        return React.createElement('span',{className:cls}, children);
+      }
+
+      function KPI({label, value, unit}){
+        return React.createElement('div',{className:'card'},
+          React.createElement('div',{className:'sub'}, label),
+          React.createElement('div',{className:'kpi'}, value + (unit||''))
+        );
+      }
+
+      function SimpleLineChart({series, color='#60a5fa'}){
+        // render bar chart with SVG and show value on each bar
+        const min = Math.min(...series);
+        const max = Math.max(...series);
+        const N = series.length;
+        const marginY = 15;
+        const marginX = 3;
+  const barWidth = (30-5*marginX)/N*0.6;
+        return React.createElement('div',{
+          className:'chart',
+          style:{padding:'50px 0', background:'linear-gradient(120deg, rgba(34,197,94,.07), rgba(96,165,250,.09))', borderRadius:'50px', minHeight: '500px'}
+        },
+          React.createElement('svg',{
+            width:'100%', height:'100%', viewBox:'0 0 100 100', preserveAspectRatio:'none',
+            style:{position:'absolute',top:0,left:0,width:'100%',height:'100%'}
+          },
+            // background grid lines
+            [0.25,0.5,0.75].map((f,idx)=>React.createElement('line',{
+              key:'grid'+idx,
+              x1:marginX, x2:100-marginX,
+              y1:marginY+f*(100-2*marginY), y2:marginY+f*(100-2*marginY),
+              stroke:'#334155', strokeDasharray:'2 2', strokeWidth:0.7, opacity:0.18
+            })),
+            series.map((v,i)=>{
+              const x = marginX + i*(100-2*marginX)/N + ((100-2*marginX)/N-barWidth)/2;
+              const y = marginY + (1 - (v-min)/((max-min)||1))*(100-2*marginY);
+              const h = ((v-min)/((max-min)||1))*(100-2*marginY);
+              return [
+                React.createElement('rect',{
+                  key:'bar'+i,
+                  x:x,
+                  y:y,
+                  width:barWidth,
+                  height:Math.max(1.2,h),
+                  fill:color,
+                  rx:1.5,
+                  style:{filter:'drop-shadow(0 2px 8px #60a5fa33)', opacity:0.88}
+                }),
+                React.createElement('text',{
+                  key:'label'+i,
+                  x:x+barWidth/2,
+                  y:y-2,
+                  textAnchor:'middle',
+                  fontSize:'3',
+                  fill:'#fff',
+                  style:{fontWeight:5, textShadow:'0 1px 4px #0007'}
+                },v)
+              ];
+            })
+          )
+        );
+      }
+
+      // -------- Screens --------
+      function Login({onLogin}){
+        const [u,setU] = useState('');
+        const [p,setP] = useState('');
+        const [r,setR] = useState('Astronaut');
+        return React.createElement('div',{className:'login card'},
+          React.createElement('div',{className:'title'},'User Login'),
+          React.createElement('div',{className:'field'},
+            React.createElement('label',null,'Username'),
+            React.createElement('input',{
+              placeholder:'ชื่อผู้ใช้',
+              value:u,
+              autoComplete:'username',
+              onChange:e=>setU(e.target.value)
+            })
+          ),
+          React.createElement('div',{className:'field'},
+            React.createElement('label',null,'Password'),
+            React.createElement('input',{
+              type:'password',
+              placeholder:'รหัสผ่าน',
+              value:p,
+              autoComplete:'current-password',
+              onChange:e=>setP(e.target.value)
+            })
+          ),
+          React.createElement('div',{className:'field'},
+            React.createElement('label',null,'Role Selection'),
+            React.createElement('select',{value:r,onChange:e=>setR(e.target.value)},
+              React.createElement('option',null,'Astronaut'),
+              React.createElement('option',null,'Scientist'),
+              React.createElement('option',null,'Commander')
+            )
+          ),
+          React.createElement('button',{
+            className:'btn accent',
+            onClick:()=>onLogin({name:u||'ruk', role:r, password:p})
+          },'เข้าสู่ระบบ'),
+          React.createElement('div',{className:'footer'},'* หน้านี้เป็น mock สำหรับ prototype เท่านั้น')
+        )
+      }
+
+      function Dashboard({go, selected, setSelected}){
+        const kpis = useMemo(()=>{
+          return {
+            germination: '96%',
+            growth: '2.1 cm/day',
+            survival: '93%',
+            resource: 'Water 1.2 L/kg'
+          }
+        },[]);
+        const [search, setSearch] = useState('');
+        const filteredBatches = batches.filter(b =>
+          b.id.toLowerCase().includes(search.toLowerCase()) ||
+          b.species.toLowerCase().includes(search.toLowerCase())
+        );
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Lunar Farm Growth Monitoring'),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn accent',onClick:()=>go('dashboard')} ,'Dashboard'),
+            React.createElement('button',{className:'btn',onClick:()=>go('batches')} ,'Batches'),
+            React.createElement('button',{className:'btn',onClick:()=>go('alerts')} ,'Alerts'),
+            React.createElement('button',{className:'btn',onClick:()=>go('reports')} ,'Reports'),
+            React.createElement('button',{className:'btn',onClick:()=>go('settings')} ,'Settings'),
+            React.createElement('button',{
+              className:'btn',
+              style:{marginLeft:'auto', background:'#ef4444', color:'#fff', fontWeight:700},
+              onClick:()=>{ window.location.reload(); }
+            },'Logout')
+          ),
+          React.createElement('div', {style:{margin:'0 0 18px 0', display:'flex', alignItems:'center', gap:'12px'}},
+            React.createElement('input', {
+              type: 'text',
+              placeholder: 'ค้นหา Batch หรือชื่อพืช...',
+              value: search,
+              onChange: e => setSearch(e.target.value),
+              style: {
+                flex:1,
+                padding:'12px 16px',
+                borderRadius:'12px',
+                border:'1.5px solid #1f2937',
+                background:'#111827',
+                color:'var(--ink)',
+                fontSize:'16px',
+                outline:'none',
+                boxShadow:'0 1px 4px 0 rgba(96,165,250,0.07)'
+              }
+            })
+          ),
+          React.createElement('div',{className:'grid kpi'},
+            React.createElement(KPI,{label:'Germination', value:kpis.germination}),
+            React.createElement(KPI,{label:'Avg Growth Rate', value:kpis.growth}),
+            React.createElement(KPI,{label:'Survival', value:kpis.survival}),
+            React.createElement(KPI,{label:'Resource Use', value:kpis.resource})
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:'18px'}},
+            React.createElement('div',{className:'sub', style:{marginBottom:'8px'}},'รายการ Batch'),
+            React.createElement('div',{className:'list'},
+              filteredBatches.length === 0 ?
+                React.createElement('div',{className:'muted'},'ไม่พบข้อมูลที่ค้นหา') :
+                filteredBatches.map(b=>React.createElement('div',{key:b.id,className:'row'},
+                  React.createElement('div',null,
+                    React.createElement('div',null, b.id + ' • ' + b.species + ' • ' + b.stage),
+                    React.createElement('div',{className:'muted'}, 'เริ่มปลูก: ' + b.start + ' • รูป: ' + b.images + ' ภาพ')
+                  ),
+                  React.createElement('button',{className:'btn',onClick:()=>go('detail', b.id)},'ดูรายละเอียด')
+                ))
+            )
+          ),
+          React.createElement('div',{className:'cols'},
+            React.createElement('div',{className:'card'},
+              React.createElement('div',{className:'sub'},'ความสูงของต้น (cm) — 7 วันล่าสุด'),
+              React.createElement(SimpleLineChart,{series: metrics['A-01'].height}),
+              React.createElement('div',{className:'legend'}, 
+                React.createElement('span',{className:'pill'},'Batch A-01'), 
+                React.createElement('span',{className:'pill'},'Lettuce')
+              )
+            ),
+            React.createElement('div',{className:'card'},
+              React.createElement('div',{className:'sub'},'การแจ้งเตือนล่าสุด'),
+              React.createElement('div',{className:'list'},
+                alerts.slice(0,3).map(a=>React.createElement('div',{key:a.id,className:'row'},
+                  React.createElement('div',null, 
+                    React.createElement('div',null, a.msg),
+                    React.createElement('div',{className:'muted'}, a.ts + ' • ' + a.batch)
+                  ),
+                  React.createElement(Tag,{tone: a.type==='High'?'danger':(a.type==='Low'?'warn':'')}, a.type)
+                ))
+              )
+            )
+          )
+        )
+      }
+
+      function Batches({go}){
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Batches'),
+          React.createElement('div',{className:'list'},
+            batches.map(b=>React.createElement('div',{key:b.id,className:'row'},
+              React.createElement('div', {style:{display:'flex',alignItems:'center',gap:'16px'}},
+                b.img && React.createElement('img', {
+                  src: b.img,
+                  alt: b.species,
+                  style: {width:'54px',height:'54px',objectFit:'cover',borderRadius:'12px',border:'1.5px solid #334155',background:'#222'}
+                }),
+                React.createElement('div',null,
+                  React.createElement('div',null, b.id + ' • ' + b.species + ' • ' + b.stage),
+                  React.createElement('div',{className:'muted'}, 'เริ่มปลูก: ' + b.start + ' • รูป: ' + b.images + ' ภาพ')
+                )
+              ),
+              React.createElement('button',{className:'btn',onClick:()=>go('detail', b.id)},'ดูรายละเอียด')
+            ))
+          ),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn',onClick:()=>go('dashboard')},'กลับ Dashboard')
+          )
+        )
+      }
+
+      function BatchDetail({id, go}){
+        const m = metrics[id];
+        const batch = batches.find(x=>x.id===id);
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Batch Detail — ' + id),
+          batch && batch.img && React.createElement('div', {
+            style: {display:'flex',justifyContent:'center',alignItems:'center',margin:'0 0 24px 0'}
+          },
+            React.createElement('img', {
+              src: batch.img,
+              alt: batch.species,
+              style: {width:'380px',height:'260px',objectFit:'cover',borderRadius:'22px',border:'2.5px solid #334155',background:'#222',boxShadow:'0 4px 32px 0 rgba(34,197,94,0.13)'}
+            })
+          ),
+          React.createElement('div',{className:'grid kpi'},
+            React.createElement(KPI,{label:'สูงสุด (cm)', value: Math.max(...m.height)}),
+            React.createElement(KPI,{label:'pH ล่าสุด', value: m.ph[m.ph.length-1]}),
+            React.createElement(KPI,{label:'อุณหภูมิเฉลี่ย (°C)', value: Math.round(m.temp.reduce((a,b)=>a+b,0)/m.temp.length)}),
+            React.createElement(KPI,{label:'รูป Time‑lapse', value: (batch||{images:0}).images })
+          ),
+          React.createElement('div',{className:'cols'},
+            React.createElement('div',{className:'card'},
+              React.createElement('div',{className:'sub'},'ความสูงของต้น (cm)'),
+              React.createElement(SimpleLineChart,{series: m.height})
+            ),
+            React.createElement('div',{className:'card'},
+              React.createElement('div',{className:'sub'},'pH'),
+              React.createElement(SimpleLineChart,{series: m.ph})
+            )
+          ),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn',onClick:()=>go('batches')},'ย้อนกลับ')
+          )
+        )
+      }
+
+      function Alerts({go}){
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Alerts'),
+          React.createElement('div',{className:'list'},
+            alerts.map(a=>React.createElement('div',{key:a.id,className:'row'},
+              React.createElement('div',null,
+                React.createElement('div',null, a.msg),
+                React.createElement('div',{className:'muted'}, a.ts + ' • Batch ' + a.batch + ' • Metric ' + a.metric)
+              ),
+              React.createElement(Tag,{tone: a.type==='High'?'danger':(a.type==='Low'?'warn':'')}, a.type)
+            ))
+          ),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn',onClick:()=>go('dashboard')},'กลับ Dashboard')
+          )
+        )
+      }
+
+      function Reports({go}){
+        // Mock data
+        const [dateFrom, setDateFrom] = React.useState('2025-09-01');
+        const [dateTo, setDateTo] = React.useState('2025-09-07');
+        const [batch, setBatch] = React.useState('all');
+        const [exporting, setExporting] = React.useState(false);
+        const [downloadUrl, setDownloadUrl] = React.useState(null);
+        const batchOptions = [{id:'all', name:'ทั้งหมด'}].concat(batches.map(b=>({id:b.id, name:b.id+' - '+b.species})));
+        // Filtered data (mock logic)
+        const filteredAlerts = alerts.filter(a=>(batch==='all'||a.batch===batch));
+        const filteredMetrics = batch==='all'?metrics['A-01']:metrics[batch]||metrics['A-01'];
+        // Export PDF (mock)
+        function exportPDF(){
+          setExporting(true);
+          setTimeout(()=>{
+            // mock PDF file as blob
+            const blob = new Blob([
+              `Weekly Report\nช่วงวันที่: ${dateFrom} ถึง ${dateTo}\nBatch: ${batch}`
+            ], {type:'application/pdf'});
+            setDownloadUrl(URL.createObjectURL(blob));
+            setExporting(false);
+          }, 1200);
+        }
+        // Progress mock
+        const resourceUsed = 1.2, resourceTarget = 1.0;
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Weekly Report'),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'flex', style:{gap:18, flexWrap:'wrap'}},
+              React.createElement('div',null,
+                React.createElement('label', {className:'muted'}, 'ช่วงวันที่'),
+                React.createElement('div', {className:'flex', style:{gap:8}},
+                  React.createElement('input', {type:'date', value:dateFrom, onChange:e=>setDateFrom(e.target.value)}),
+                  React.createElement('span', {className:'muted'}, 'ถึง'),
+                  React.createElement('input', {type:'date', value:dateTo, onChange:e=>setDateTo(e.target.value)})
+                )
+              ),
+              React.createElement('div',null,
+                React.createElement('label', {className:'muted'}, 'เลือก Batch'),
+                React.createElement('select', {value:batch, onChange:e=>setBatch(e.target.value)},
+                  batchOptions.map(opt=>React.createElement('option',{key:opt.id, value:opt.id},opt.name))
+                )
+              ),
+              React.createElement('div', {style:{display:'flex',alignItems:'center',gap:10}},
+                React.createElement('button', {
+                  className:'btn accent', 
+                  onClick:exportPDF, 
+                  disabled:exporting,
+                  style:{
+                    minWidth:'140px',
+                    boxShadow:'0 2px 12px 0 rgba(34,197,94,0.18)',
+                    display:'flex',alignItems:'center',justifyContent:'center',gap:'8px',
+                    fontSize:'17px',
+                    position:'relative',
+                    opacity:exporting?0.7:1,
+                    cursor:exporting?'not-allowed':'pointer',
+                  }
+                },
+                  exporting ?
+                    React.createElement(React.Fragment,null,
+                      React.createElement('span', {className:'spinner', style:{width:'18px',height:'18px',border:'3px solid #fff',borderTop:'3px solid #60a5fa',borderRadius:'50%',display:'inline-block',animation:'spin 1s linear infinite',verticalAlign:'middle'}}),
+                      ' กำลังสร้าง PDF...'
+                    ) :
+                    React.createElement(React.Fragment,null,
+                      React.createElement('span', {style:{fontWeight:700,fontSize:'20px',verticalAlign:'middle'}}, '\u21E9'),
+                      ' Export PDF'
+                    )
+                ),
+                downloadUrl && React.createElement('a', {
+                  href:downloadUrl, download:`WeeklyReport_${dateFrom}_${dateTo}.pdf`,
+                  className:'btn', style:{background:'#334155', color:'#fff', fontWeight:700, fontSize:'16px'},
+                  children:[
+                    React.createElement('span',{key:'icon',style:{fontWeight:700,fontSize:'18px',marginRight:6}},'\u2B07'),
+                    'ดาวน์โหลด PDF'
+                  ]
+                })
+              )
+            )
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'sub'},'Executive Summary'),
+            React.createElement('div',null,'สรุปสถานะการปลูกประจำสัปดาห์: ทุก batch มีการเจริญเติบโตดี ไม่มีปัญหารุนแรง')
+          ),
+          React.createElement('div',{className:'grid kpi'},
+            React.createElement(KPI,{label:'Germination', value:'96%'}),
+            React.createElement(KPI,{label:'Avg Growth Rate', value:'2.1 cm/day'}),
+            React.createElement(KPI,{label:'Survival', value:'93%'}),
+            React.createElement(KPI,{label:'Resource Use', value:'Water 1.2 L/kg'})
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'sub'},'Batch Highlights'),
+            React.createElement('ul',null,
+              batches.filter(b=>batch==='all'||b.id===batch).map(b=>
+                React.createElement('li',{key:b.id},
+                  b.id+': '+b.species+' ('+b.stage+') — เริ่มปลูก '+b.start+', รูป '+b.images+' ภาพ'
+                )
+              )
+            )
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'sub'},'Trends & Anomalies'),
+            React.createElement('div',{style:{marginBottom:8}},'ความสูงของต้น (cm)'),
+            React.createElement(SimpleLineChart,{series: filteredMetrics.height}),
+            React.createElement('div',{style:{marginTop:12}},'pH'),
+            React.createElement(SimpleLineChart,{series: filteredMetrics.ph})
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'sub'},'Alerts & Resolutions'),
+            React.createElement('table',{style:{width:'100%',borderCollapse:'collapse',fontSize:'15px'}},
+              React.createElement('thead',null,
+                React.createElement('tr',null,
+                  React.createElement('th',{style:{textAlign:'left',padding:'6px',color:'var(--muted)'}},'เวลา'),
+                  React.createElement('th',{style:{textAlign:'left',padding:'6px',color:'var(--muted)'}},'Batch'),
+                  React.createElement('th',{style:{textAlign:'left',padding:'6px',color:'var(--muted)'}},'Alert'),
+                  React.createElement('th',{style:{textAlign:'left',padding:'6px',color:'var(--muted)'}},'Action')
+                )
+              ),
+              React.createElement('tbody',null,
+                filteredAlerts.length===0 ?
+                  React.createElement('tr',null,
+                    React.createElement('td',{colSpan:4,style:{color:'var(--muted)',padding:'8px'}},'ไม่พบข้อมูล')
+                  ) :
+                  filteredAlerts.map(a=>React.createElement('tr',{key:a.id},
+                    React.createElement('td',{style:{padding:'6px'}},a.ts),
+                    React.createElement('td',{style:{padding:'6px'}},a.batch),
+                    React.createElement('td',{style:{padding:'6px'}},a.msg),
+                    React.createElement('td',{style:{padding:'6px'}},a.action)
+                  ))
+              )
+            )
+          ),
+          React.createElement('div',{className:'card', style:{marginBottom:18}},
+            React.createElement('div',{className:'sub'},'Resource Usage vs Target'),
+            React.createElement('div',{style:{marginBottom:8}},`Water Usage: ${resourceUsed} L/kg (เป้าหมาย ${resourceTarget} L/kg)`),
+            React.createElement('div',{
+              style:{background:'#1e293b',borderRadius:'10px',height:'22px',width:'100%',overflow:'hidden',boxShadow:'0 1px 4px 0 rgba(34,197,94,0.07)',marginBottom:4}
+            },
+              React.createElement('div',{
+                style:{height:'100%',width:Math.min(100,resourceUsed/resourceTarget*100)+'%',background:'var(--accent)',transition:'width .4s',borderRadius:'10px'}
+              })
+            ),
+            React.createElement('div',{
+              style:{fontSize:'13px',color: resourceUsed>resourceTarget?'#ef4444':'var(--muted)'}
+            }, resourceUsed>resourceTarget?'เกินเป้าหมาย':'อยู่ในเป้าหมาย')
+          ),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn',onClick:()=>go('dashboard')},'กลับ Dashboard')
+          )
+        )
+      }
+
+      function Settings({go}){
+        return React.createElement('div',{className:'app'},
+          React.createElement('div',{className:'title'},'Settings (Threshold — Mock)'),
+          React.createElement('div',{className:'grid', style:{gridTemplateColumns:'1fr 1fr', gap:'12px'}},
+            React.createElement('div',{className:'field'},
+              React.createElement('label',null,'Temp (°C) ต่ำสุด'),
+              React.createElement('input',{placeholder:'18'})
+            ),
+            React.createElement('div',{className:'field'},
+              React.createElement('label',null,'Temp (°C) สูงสุด'),
+              React.createElement('input',{placeholder:'26'})
+            ),
+            React.createElement('div',{className:'field'},
+              React.createElement('label',null,'pH ต่ำสุด'),
+              React.createElement('input',{placeholder:'5.8'})
+            ),
+            React.createElement('div',{className:'field'},
+              React.createElement('label',null,'pH สูงสุด'),
+              React.createElement('input',{placeholder:'6.5'})
+            ),
+          ),
+          React.createElement('div',{className:'nav'},
+            React.createElement('button',{className:'btn',onClick:()=>go('dashboard')},'บันทึก (mock) และกลับ')
+          )
+        )
+      }
+
+      function App(){
+        const [user,setUser]=useState(null);
+        const [route,setRoute]=useState('login');
+        const [detailId,setDetailId]=useState(null);
+
+        function go(name, arg){
+          setRoute(name);
+          if(name==='detail') setDetailId(arg);
+        }
+
+        if(!user || route==='login') return React.createElement(Login,{onLogin:(u)=>{setUser(u); setRoute('dashboard')}});
+
+        if(route==='dashboard') return React.createElement(Dashboard,{go});
+        if(route==='batches') return React.createElement(Batches,{go});
+        if(route==='detail') return React.createElement(BatchDetail,{id:detailId, go});
+        if(route==='alerts') return React.createElement(Alerts,{go});
+        if(route==='reports') return React.createElement(Reports,{go});
+        if(route==='settings') return React.createElement(Settings,{go});
+        return React.createElement('div',null,'Not found');
+      }
+
+      ReactDOM.createRoot(document.getElementById('root')).render(React.createElement(App));
+    </script>
+  </body>
+</html>
